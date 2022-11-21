@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "597275089852",
+    "project_id": "myshoppinglist-a60fd",
+    "storage_bucket": "myshoppinglist-a60fd.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:597275089852:android:9b050443ed1586a0c569b9",
+        "android_client_info": {
+          "package_name": "com.irene.myshoppinglists"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "597275089852-gafqg2knn7pmaea44vprnuvoc7s6e5t1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDVlrxH_KleTif3hTyFh85BQqsYY9poL2A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "597275089852-gafqg2knn7pmaea44vprnuvoc7s6e5t1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

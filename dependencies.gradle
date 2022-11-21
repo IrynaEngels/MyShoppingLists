@@ -1,0 +1,12 @@
+//region ------------------------VERSIONS----------------------------
+def versions = [:]
+versions.androidGradleHiltPlugin = '2.29.1-alpha'
+versions.hiltVersion = "2.42"
+versions.hiltViewmodelVersion = "1.0.0-alpha03"
+versions.timberVersion = '5.0.1'
+versions.coroutines = '1.4.1'
+versions.daggerVersion = '2.21'
+versions.multidexVersion = '2.0.1'
+
+ext.versions = versions
+//endregion ---------------------------------------------------------
