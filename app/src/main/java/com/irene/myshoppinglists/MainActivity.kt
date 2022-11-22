@@ -18,7 +18,7 @@ import com.irene.myshoppinglists.utils.StoreUserData
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
-
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     @Inject

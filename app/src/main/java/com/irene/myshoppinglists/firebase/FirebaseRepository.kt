@@ -9,9 +9,14 @@ import com.irene.myshoppinglists.model.ShoppingListWithId
 import com.irene.myshoppinglists.model.User
 import com.irene.myshoppinglists.model.UserData
 import com.irene.myshoppinglists.utils.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.last
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
@@ -36,6 +41,9 @@ class FirebaseRepository @Inject constructor(
 
     val shoppingListsStateFlow: StateFlow<List<ShoppingListWithId>> = _shoppingLists.asStateFlow()
 
+    //TODO cancel
+    private val scope = CoroutineScope(Dispatchers.IO)
+
     val userListener = object : ValueEventListener {
         override fun onDataChange(dataSnapshot: DataSnapshot) {
             // Get Post object and use the values to update the UI
@@ -51,6 +59,7 @@ class FirebaseRepository @Inject constructor(
                         list.add(it)
                     }
                 }
+
                 _users.value = list
             }
         }
@@ -71,16 +80,26 @@ class FirebaseRepository @Inject constructor(
                 for (i in iter) {
                     log("key: ${i.key}")
                     //if key = user name
-                    val user = i.getValue<UserData>()
-                    user?.friends?.let {
-                        if (it.isNotEmpty())
-                            for (friend in it.parseString()) {
-                                log("friend $friend")
-                                list.add(friend)
+                    scope.launch {
+                        storeUserData.getName.collect{ currentUser ->
+                            log("currentUser $currentUser")
+                            if (currentUser == i.key) {
+                                val user = i.getValue<UserData>()
+                                user?.friends?.let {
+                                    if (it.isNotEmpty())
+                                        for (friend in it.parseString()) {
+                                            log("friend $friend")
+                                            list.add(friend)
+                                        }
+                                }
+                                _friends.value = list
                             }
+                        }
+
                     }
+
                 }
-                _friends.value = list
+
             }
         }
 
@@ -94,16 +113,28 @@ class FirebaseRepository @Inject constructor(
         override fun onDataChange(dataSnapshot: DataSnapshot) {
             if (dataSnapshot.hasChildren()) {
                 val iter: Iterator<DataSnapshot> = dataSnapshot.children.iterator()
-                val list = mutableListOf<ShoppingListWithId>()
-                for (i in iter) {
-                    log("key: ${i.key}")
-                    val key = i.key
-                    val shoppingList = i.getValue<ShoppingList>()
-                    key?.let {
-                        list.add(shoppingList!!.createShoppingListWithId(key))
+                scope.launch {
+                    storeUserData.getName.collect { user ->
+                    val list = mutableListOf<ShoppingListWithId>()
+                    for (i in iter) {
+                        val key = i.key
+                        val shoppingList = i.getValue<ShoppingList>()
+                        shoppingList?.let {
+                            it.editors?.let { editors ->
+                                    user?.let {
+                                        if (editors.parseString().isSuchUserExists(user)) {
+                                            key?.let {
+                                                list.add(shoppingList.createShoppingListWithId(key))
+                                            }
+                                        }
+                                    }
+
+                                }
+                            }
+                        }
+                        _shoppingLists.value = list
                     }
                 }
-                _shoppingLists.value = list
             }
         }
 
@@ -167,5 +198,8 @@ class FirebaseRepository @Inject constructor(
         }
     }
 
+    fun cancel() {
+        scope.cancel()
+    }
 
 }

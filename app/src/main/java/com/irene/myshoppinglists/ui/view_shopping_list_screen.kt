@@ -8,11 +8,14 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.irene.myshoppinglists.Greeting
@@ -57,14 +60,22 @@ fun EditProductItem(product: String, edit: (product: String) -> Unit, delete: (p
             IconButton(onClick = {
                 edit(product)
             }) {
+                if (product.isProductBought())
+                    Icon(
+                        imageVector = Icons.Filled.Check,
+                        contentDescription = "Bought",
+                    )
+                else
                 Icon(
                     imageVector = Icons.Filled.ShoppingCart,
                     contentDescription = "ToBuy",
                 )
             }
             Spacer(modifier = Modifier.width(16.dp))
-            Text(product, fontSize = 16.sp)
-//            Text(product.showProductName(), fontSize = 16.sp)
+//            Text(product, fontSize = 16.sp)
+            Text(product.showProductName(),
+                fontSize = 16.sp,
+                style = TextStyle(textDecoration = if (product.isProductBought()) TextDecoration.LineThrough else TextDecoration.None))
             Spacer(modifier = Modifier.weight(1f))
             IconButton(onClick = {
                 delete(product)

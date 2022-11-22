@@ -59,9 +59,13 @@ fun String.editListWhenProductBought(list: List<String>): String {
 
 fun String.changeBoughtProperty(): String {
     val name = this.subSequence(0, this.length-1).toString()
-    val isBought = this[this.length-1] == "B".first()
+    val isBought = this.isProductBought()
     return if (!isBought)  "${name}B" else "${name}N"
  }
+
+fun String.isProductBought(): Boolean {
+    return this[this.length-1] == "B".first()
+}
 
 
 fun ShoppingList.createShoppingListWithId(id: String): ShoppingListWithId =
