@@ -18,6 +18,7 @@ import com.irene.myshoppinglists.firebase.FirebaseRepository
 import com.irene.myshoppinglists.ui.theme.SearchFriendTextField
 import com.irene.myshoppinglists.utils.isSuchUserExists
 import com.irene.myshoppinglists.utils.log
+import com.irene.myshoppinglists.utils.removeWhitespaces
 import kotlinx.coroutines.launch
 
 @Composable
@@ -34,7 +35,7 @@ fun FriendsScreen(firebaseRepository: FirebaseRepository){
     Column(modifier = Modifier.padding(16.dp)) {
         Greeting("FriendsScreen")
         SearchFriendTextField(modifier = Modifier.fillMaxWidth()){
-            userExists = users.value.isSuchUserExists(it.text)
+            userExists = users.value.isSuchUserExists(it.text.removeWhitespaces())
             if (userExists) userName = it.text
             log("userExists $userExists")
             userSearchClicked = true

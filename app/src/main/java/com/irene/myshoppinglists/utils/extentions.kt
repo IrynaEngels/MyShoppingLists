@@ -20,6 +20,12 @@ fun String.parseString(): List<String> {
     return this.split(",")
 }
 
+fun String.isUsernameAllowed(): Boolean{
+    return !this.contains(" ")
+}
+
+fun String.removeWhitespaces() = replace(" ", "")
+
 fun String.formListAddString(list: List<String>): String {
     var listToString = ""
     for (f in list) {

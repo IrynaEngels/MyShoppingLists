@@ -25,6 +25,7 @@ fun NavigationGraph(navController: NavHostController,
     val dataStore = StoreUserData(context)
     val userName = dataStore.getName.collectAsState(initial = "")
 
+//    val startDestination = CREATE_USER_SCREEN
     val startDestination = if (userName.value == "") CREATE_USER_SCREEN else BottomNavItem.Lists.screen_route
 
     NavHost(navController, startDestination = startDestination) {

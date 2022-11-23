@@ -38,7 +38,10 @@ class MainActivity : ComponentActivity() {
             var showBottomBar by remember { mutableStateOf(true) }
 
             val navController = rememberNavController()
+            val state: ScaffoldState = rememberScaffoldState()
+
             Scaffold(
+                scaffoldState = state,
                 bottomBar = {
                     if (showBottomBar)
                         BottomNavigationBar(navController = navController)
@@ -46,7 +49,9 @@ class MainActivity : ComponentActivity() {
             ) {
                 NavigationGraph(
                     navController = navController,
-                    { CreateUserScreen(firebaseRepository, storeUserData, navController) },
+                    { CreateUserScreen(firebaseRepository, storeUserData, navController){action ->
+                        showSnackBar(state, action)
+                    } },
                     { ListScreen(productListViewModel, storeUserData, navController) },
                     { FriendsScreen(firebaseRepository) },
                     { ProductsScreen() },
