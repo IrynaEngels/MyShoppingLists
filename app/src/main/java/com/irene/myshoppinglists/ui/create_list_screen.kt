@@ -1,5 +1,6 @@
 package com.irene.myshoppinglists.ui
 
+import android.widget.Toast
 import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
@@ -26,20 +27,30 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.irene.myshoppinglists.Greeting
 import com.irene.myshoppinglists.utils.createNewProduct
+import com.irene.myshoppinglists.utils.log
+import com.irene.myshoppinglists.utils.showProductName
 
 @Composable
 fun CreateListScreen(productListViewModel: ProductListViewModel) {
-    val items = (1..10).map { "Item $it" }
     val context = LocalContext.current
     val products = productListViewModel.productsStateFlow.collectAsState()
+    val allFriends = productListViewModel.userFriends.collectAsState()
+    val friendsInList = productListViewModel.friendsStateFlow.collectAsState()
 
     var listName by remember { mutableStateOf("List") }
-    var openDialog by remember { mutableStateOf(false) }
-    if (openDialog)
+    var openProductDialog by remember { mutableStateOf(false) }
+    if (openProductDialog)
         AddProductDialog({
             productListViewModel.addProduct(it)
         }, {
-            openDialog = false
+            openProductDialog = false
+        })
+
+    var openFriendsDialog by remember { mutableStateOf(false) }
+    if (openFriendsDialog)
+        AddFriendsDialog(productListViewModel, {
+        }, {
+            openFriendsDialog = false
         })
 
     Column(modifier = Modifier.padding(horizontal = 16.dp)) {
@@ -58,16 +69,16 @@ fun CreateListScreen(productListViewModel: ProductListViewModel) {
                 .horizontalScroll(rememberScrollState())
                 .padding(16.dp)
         ) {
-            AddFriendSharingItem() {}
+            AddFriendSharingItem() { openFriendsDialog = true }
             Spacer(modifier = Modifier.width(8.dp))
-            for (i in items) {
+            for (i in friendsInList.value) {
                 FriendSharingItem(i) {}
                 Spacer(modifier = Modifier.width(8.dp))
             }
         }
         Text("Products")
         AddProduct {
-            openDialog = true
+            openProductDialog = true
         }
         LazyColumn(
             modifier = Modifier
@@ -88,12 +99,17 @@ fun CreateListScreen(productListViewModel: ProductListViewModel) {
             Spacer(modifier = Modifier.weight(1f))
             Button(
                 onClick = {
-                    productListViewModel.createList(
-                        context,
-                        listName,
-                        listOf(),
-                        products.value
-                    )
+                    if (products.value.isNotEmpty()) {
+                        productListViewModel.createList(
+                            context,
+                            listName,
+                            friendsInList.value,
+                            products.value
+                        )
+                        Toast.makeText(context, "List created", Toast.LENGTH_SHORT).show()
+                        //TODO navigate back
+                    }
+                    else Toast.makeText(context, "Add some products to list", Toast.LENGTH_SHORT).show()
                 }
             ) {
                 Text("Save List")
@@ -224,7 +240,7 @@ fun AddProduct(openAddDialog: () -> Unit) {
 fun ProductItem(product: String, delete: (product: String) -> Unit) {
     Column(Modifier.padding(horizontal = 16.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(product, fontSize = 16.sp)
+            Text(product.showProductName(), fontSize = 16.sp)
             Spacer(modifier = Modifier.weight(1f))
             IconButton(onClick = {
                 delete(product)
@@ -278,4 +294,78 @@ fun AddProductDialog(addProduct: (product: String) -> Unit, closeDialog: () -> U
             }
         }
     )
+}
+
+
+@Composable
+fun AddFriendsDialog(productListViewModel: ProductListViewModel, addFriends: (friends: List<String>) -> Unit, closeDialog: () -> Unit) {
+
+    val allFriends = productListViewModel.userFriends.collectAsState()
+    val friendList = productListViewModel.friendsStateFlow.collectAsState()
+    AlertDialog(
+        onDismissRequest = {
+            closeDialog()
+        },
+        title = {
+            Spacer(modifier = Modifier.height(4.dp))
+        },
+        text = {
+            Column() {
+                log("friendList ${friendList.value.size}")
+                for (friend in allFriends.value) {
+                    val isAdded = friendList.value.contains(friend)
+                    AddFriendToList(friend, isAdded) {
+                        if (isAdded) {
+                            log("isAdded")
+                            productListViewModel.removeFriend(it)
+                        }
+                        else {
+                            log("is not added")
+                            productListViewModel.addFriend(it)
+                        }
+                    }
+                }
+            }
+        },
+        buttons = {
+            Row(
+                modifier = Modifier
+                    .padding(bottom = 8.dp, end = 24.dp)
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
+            ) {
+                Button(
+                    onClick = { closeDialog() }
+                ) {
+                    Text("OK")
+                }
+            }
+        }
+    )
+}
+
+
+@Composable
+fun AddFriendToList(userName: String, isAdded: Boolean, addOrRemoveFriend: (userName: String) -> Unit){
+    Column(Modifier.padding(16.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(userName, fontSize = 16.sp)
+            Spacer(modifier = Modifier.weight(1f))
+            IconButton(onClick = {
+                addOrRemoveFriend(userName)
+            }) {
+                if (isAdded)
+                    Icon(
+                        imageVector = Icons.Filled.Check,
+                        contentDescription = "Add",
+                    )
+                else
+                    Icon(
+                        imageVector = Icons.Filled.Add,
+                        contentDescription = "Add",
+                    )
+            }
+        }
+        Divider()
+    }
 }

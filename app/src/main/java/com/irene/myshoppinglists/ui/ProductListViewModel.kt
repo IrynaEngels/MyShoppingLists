@@ -25,6 +25,13 @@ class ProductListViewModel @Inject constructor(
 
     val shoppingLists = repository.shoppingListsStateFlow
 
+    val userFriends = repository.friendsStateFlow
+
+    private val _friends: MutableStateFlow<List<String>> =
+        MutableStateFlow(listOf())
+
+    val friendsStateFlow: StateFlow<List<String>> = _friends.asStateFlow()
+
     fun addProduct(product: String) {
         val list = mutableListOf<String>()
         for (p in productsStateFlow.value)
@@ -45,12 +52,34 @@ class ProductListViewModel @Inject constructor(
         repository.editProducts(id, product.editListWhenProductBought(products))
     }
 
+
     fun deleteProduct(product: String) {
         val list = mutableListOf<String>()
         for (p in productsStateFlow.value)
             if (p != product)
                 list.add(p)
         _products.value = list
+    }
+
+    fun addFriend(friend: String) {
+        val list = mutableListOf<String>()
+        for (p in friendsStateFlow.value)
+            list.add(p)
+        list.add(friend)
+        _friends.value = list
+    }
+
+    fun removeFriend(friend: String) {
+        val list = mutableListOf<String>()
+        for (p in friendsStateFlow.value)
+            if (p != friend)
+                list.add(p)
+        _friends.value = list
+    }
+
+    fun addFriendsToDB(id: String, friends: List<String>){
+        val newFriends = friends.formStringFromList()
+        repository.editFriends(id, newFriends.formListAddString(friends))
     }
 
     fun createList(context: Context, name: String, friends: List<String>, products: List<String>) {

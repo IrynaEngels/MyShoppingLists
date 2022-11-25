@@ -1,5 +1,6 @@
 package com.irene.myshoppinglists.ui
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -53,6 +54,7 @@ fun ShoppingListEditScreen(productListViewModel: ProductListViewModel, shoppingL
     }
 }
 
+@SuppressLint("SuspiciousIndentation")
 @Composable
 fun EditProductItem(product: String, edit: (product: String) -> Unit, delete: (product: String) -> Unit){
     Column(Modifier.padding(16.dp)) {
