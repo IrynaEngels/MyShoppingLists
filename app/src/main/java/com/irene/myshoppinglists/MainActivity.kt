@@ -55,7 +55,7 @@ class MainActivity : ComponentActivity() {
                     { ListScreen(productListViewModel, storeUserData, navController) },
                     { FriendsScreen(firebaseRepository) },
                     { ProductsScreen() },
-                    { CreateListScreen(productListViewModel) },
+                    { CreateListScreen(productListViewModel, navController) },
                     { id -> ShoppingListEditScreen(productListViewModel, id) },
                     { showBottomBar = it}
                 )

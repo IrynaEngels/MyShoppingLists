@@ -1,6 +1,7 @@
 package com.irene.myshoppinglists.ui
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -27,6 +28,9 @@ fun ShoppingListEditScreen(productListViewModel: ProductListViewModel, shoppingL
     val allShoppingList = productListViewModel.shoppingLists.collectAsState()
     val products = allShoppingList.value.getListById(shoppingListId).products?.parseString()
 
+    val allFriends = productListViewModel.userFriends.collectAsState()
+    val editors = allShoppingList.value.getListById(shoppingListId).editors?.parseString()
+
     var openDialog by remember { mutableStateOf(false) }
     if (openDialog)
         AddProductDialog({
@@ -38,6 +42,19 @@ fun ShoppingListEditScreen(productListViewModel: ProductListViewModel, shoppingL
     Column(modifier = Modifier
         .verticalScroll(rememberScrollState())) {
         Greeting("ProductsScreen")
+        Text("Users who can edit this list")
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .horizontalScroll(rememberScrollState())
+                .padding(16.dp)
+        ) {
+            Spacer(modifier = Modifier.width(8.dp))
+            for (i in editors!!) {
+                FriendSharingItem(i) {}
+                Spacer(modifier = Modifier.width(8.dp))
+            }
+        }
         AddProduct {
             openDialog = true
         }

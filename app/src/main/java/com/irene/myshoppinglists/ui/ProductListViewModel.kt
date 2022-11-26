@@ -103,4 +103,9 @@ class ProductListViewModel @Inject constructor(
         }
     }
 
+    fun clearData(){
+        _friends.value = listOf()
+        _products.value = listOf()
+    }
+
 }

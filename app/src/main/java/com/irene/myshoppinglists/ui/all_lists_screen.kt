@@ -61,17 +61,20 @@ fun ListScreen(productListViewModel: ProductListViewModel, dataStore: StoreUserD
         }
         Divider()
         for (list in shoppingLists.value){
-            ShoppingListItem(list.name!!){
-                navController.navigate("$EDIT_LIST_SCREEN/${list.id}") {
-                    navController.graph.startDestinationRoute?.let { screen_route ->
-                        popUpTo(screen_route) {
-                            saveState = true
+            list.name?.let {
+                ShoppingListItem(list.name){
+                    navController.navigate("$EDIT_LIST_SCREEN/${list.id}") {
+                        navController.graph.startDestinationRoute?.let { screen_route ->
+                            popUpTo(screen_route) {
+                                saveState = true
+                            }
                         }
+                        launchSingleTop = true
+                        restoreState = true
                     }
-                    launchSingleTop = true
-                    restoreState = true
                 }
             }
+
         }
     }
 }

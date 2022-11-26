@@ -1,6 +1,7 @@
 package com.irene.myshoppinglists.ui
 
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
@@ -25,17 +26,25 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.irene.myshoppinglists.Greeting
+import com.irene.myshoppinglists.ui.navigation.BottomNavItem
+import com.irene.myshoppinglists.ui.navigation.CREATE_LIST_SCREEN
+import com.irene.myshoppinglists.ui.navigation.navigateTo
 import com.irene.myshoppinglists.utils.createNewProduct
 import com.irene.myshoppinglists.utils.log
 import com.irene.myshoppinglists.utils.showProductName
 
 @Composable
-fun CreateListScreen(productListViewModel: ProductListViewModel) {
+fun CreateListScreen(productListViewModel: ProductListViewModel, navController: NavHostController) {
     val context = LocalContext.current
     val products = productListViewModel.productsStateFlow.collectAsState()
     val allFriends = productListViewModel.userFriends.collectAsState()
     val friendsInList = productListViewModel.friendsStateFlow.collectAsState()
+
+    BackHandler(enabled = false) {
+        productListViewModel.clearData()
+    }
 
     var listName by remember { mutableStateOf("List") }
     var openProductDialog by remember { mutableStateOf(false) }
@@ -107,7 +116,9 @@ fun CreateListScreen(productListViewModel: ProductListViewModel) {
                             products.value
                         )
                         Toast.makeText(context, "List created", Toast.LENGTH_SHORT).show()
-                        //TODO navigate back
+
+                        navController.navigateTo(BottomNavItem.Lists.screen_route)
+                        productListViewModel.clearData()
                     }
                     else Toast.makeText(context, "Add some products to list", Toast.LENGTH_SHORT).show()
                 }
