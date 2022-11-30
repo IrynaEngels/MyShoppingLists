@@ -77,9 +77,12 @@ class ProductListViewModel @Inject constructor(
         _friends.value = list
     }
 
-    fun addFriendsToDB(id: String, friends: List<String>){
-        val newFriends = friends.formStringFromList()
-        repository.editFriends(id, newFriends.formListAddString(friends))
+    fun addFriendsInListToDB(id: String, newFriends: List<String>, friends: List<String>){
+        val list = mutableListOf<String>()
+        list.addAll(friends)
+        list.addAll(newFriends)
+        val newFriendsList = list.formStringFromList()
+        repository.editFriendsInList(id, newFriendsList)
     }
 
     fun createList(context: Context, name: String, friends: List<String>, products: List<String>) {
@@ -106,6 +109,10 @@ class ProductListViewModel @Inject constructor(
     fun clearData(){
         _friends.value = listOf()
         _products.value = listOf()
+    }
+
+    fun clearFriendsList(){
+        _friends.value = listOf()
     }
 
 }

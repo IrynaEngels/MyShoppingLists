@@ -24,12 +24,12 @@ import com.irene.myshoppinglists.Greeting
 import com.irene.myshoppinglists.utils.*
 
 @Composable
-fun ShoppingListEditScreen(productListViewModel: ProductListViewModel, shoppingListId: String){
+fun ShoppingListEditScreen(productListViewModel: ProductListViewModel, shoppingListId: String) {
     val allShoppingList = productListViewModel.shoppingLists.collectAsState()
     val products = allShoppingList.value.getListById(shoppingListId).products?.parseString()
 
     val allFriends = productListViewModel.userFriends.collectAsState()
-    val editors = allShoppingList.value.getListById(shoppingListId).editors?.parseString()
+    val editors = allShoppingList.value.getListById(shoppingListId).editors?.parseString() ?: listOf()
 
     var openDialog by remember { mutableStateOf(false) }
     if (openDialog)
@@ -39,8 +39,22 @@ fun ShoppingListEditScreen(productListViewModel: ProductListViewModel, shoppingL
             openDialog = false
         })
 
-    Column(modifier = Modifier
-        .verticalScroll(rememberScrollState())) {
+    var openFriendsDialog by remember { mutableStateOf(false) }
+    if (openFriendsDialog)
+        AddFriendsDialog(productListViewModel,
+            allFriends.value.friendsNotAddedToThisList(editors), {
+                productListViewModel.addFriendsInListToDB(shoppingListId, it, editors)
+                openFriendsDialog = false
+                productListViewModel.clearFriendsList()
+            }, {
+                openFriendsDialog = false
+                productListViewModel.clearFriendsList()
+            })
+
+    Column(
+        modifier = Modifier
+            .verticalScroll(rememberScrollState())
+    ) {
         Greeting("ProductsScreen")
         Text("Users who can edit this list")
         Row(
@@ -49,6 +63,7 @@ fun ShoppingListEditScreen(productListViewModel: ProductListViewModel, shoppingL
                 .horizontalScroll(rememberScrollState())
                 .padding(16.dp)
         ) {
+            AddFriendSharingItem() { openFriendsDialog = true }
             Spacer(modifier = Modifier.width(8.dp))
             for (i in editors!!) {
                 FriendSharingItem(i) {}
@@ -59,7 +74,7 @@ fun ShoppingListEditScreen(productListViewModel: ProductListViewModel, shoppingL
             openDialog = true
         }
         products?.let {
-            for (p in products){
+            for (p in products) {
                 EditProductItem(product = p, {
                     productListViewModel.editProductsInDB(shoppingListId, it, products)
                 }, {
@@ -73,7 +88,11 @@ fun ShoppingListEditScreen(productListViewModel: ProductListViewModel, shoppingL
 
 @SuppressLint("SuspiciousIndentation")
 @Composable
-fun EditProductItem(product: String, edit: (product: String) -> Unit, delete: (product: String) -> Unit){
+fun EditProductItem(
+    product: String,
+    edit: (product: String) -> Unit,
+    delete: (product: String) -> Unit
+) {
     Column(Modifier.padding(16.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             IconButton(onClick = {
@@ -85,16 +104,18 @@ fun EditProductItem(product: String, edit: (product: String) -> Unit, delete: (p
                         contentDescription = "Bought",
                     )
                 else
-                Icon(
-                    imageVector = Icons.Filled.ShoppingCart,
-                    contentDescription = "ToBuy",
-                )
+                    Icon(
+                        imageVector = Icons.Filled.ShoppingCart,
+                        contentDescription = "ToBuy",
+                    )
             }
             Spacer(modifier = Modifier.width(16.dp))
 //            Text(product, fontSize = 16.sp)
-            Text(product.showProductName(),
+            Text(
+                product.showProductName(),
                 fontSize = 16.sp,
-                style = TextStyle(textDecoration = if (product.isProductBought()) TextDecoration.LineThrough else TextDecoration.None))
+                style = TextStyle(textDecoration = if (product.isProductBought()) TextDecoration.LineThrough else TextDecoration.None)
+            )
             Spacer(modifier = Modifier.weight(1f))
             IconButton(onClick = {
                 delete(product)

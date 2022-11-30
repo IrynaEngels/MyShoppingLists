@@ -33,6 +33,7 @@ import com.irene.myshoppinglists.ui.navigation.CREATE_LIST_SCREEN
 import com.irene.myshoppinglists.ui.navigation.navigateTo
 import com.irene.myshoppinglists.utils.createNewProduct
 import com.irene.myshoppinglists.utils.log
+import com.irene.myshoppinglists.utils.newListWithRemovedItem
 import com.irene.myshoppinglists.utils.showProductName
 
 @Composable
@@ -57,7 +58,8 @@ fun CreateListScreen(productListViewModel: ProductListViewModel, navController: 
 
     var openFriendsDialog by remember { mutableStateOf(false) }
     if (openFriendsDialog)
-        AddFriendsDialog(productListViewModel, {
+        AddFriendsDialog(productListViewModel, allFriends.value, {
+            openFriendsDialog = false
         }, {
             openFriendsDialog = false
         })
@@ -81,7 +83,9 @@ fun CreateListScreen(productListViewModel: ProductListViewModel, navController: 
             AddFriendSharingItem() { openFriendsDialog = true }
             Spacer(modifier = Modifier.width(8.dp))
             for (i in friendsInList.value) {
-                FriendSharingItem(i) {}
+                FriendSharingItem(i) {
+                    productListViewModel.removeFriend(it)
+                }
                 Spacer(modifier = Modifier.width(8.dp))
             }
         }
@@ -309,9 +313,8 @@ fun AddProductDialog(addProduct: (product: String) -> Unit, closeDialog: () -> U
 
 
 @Composable
-fun AddFriendsDialog(productListViewModel: ProductListViewModel, addFriends: (friends: List<String>) -> Unit, closeDialog: () -> Unit) {
+fun AddFriendsDialog(productListViewModel: ProductListViewModel, usersToAdd: List<String>, addFriends: (friends: List<String>) -> Unit, closeDialog: () -> Unit) {
 
-    val allFriends = productListViewModel.userFriends.collectAsState()
     val friendList = productListViewModel.friendsStateFlow.collectAsState()
     AlertDialog(
         onDismissRequest = {
@@ -323,7 +326,7 @@ fun AddFriendsDialog(productListViewModel: ProductListViewModel, addFriends: (fr
         text = {
             Column() {
                 log("friendList ${friendList.value.size}")
-                for (friend in allFriends.value) {
+                for (friend in usersToAdd) {
                     val isAdded = friendList.value.contains(friend)
                     AddFriendToList(friend, isAdded) {
                         if (isAdded) {
@@ -346,7 +349,7 @@ fun AddFriendsDialog(productListViewModel: ProductListViewModel, addFriends: (fr
                 horizontalArrangement = Arrangement.End
             ) {
                 Button(
-                    onClick = { closeDialog() }
+                    onClick = { addFriends(friendList.value) }
                 ) {
                     Text("OK")
                 }

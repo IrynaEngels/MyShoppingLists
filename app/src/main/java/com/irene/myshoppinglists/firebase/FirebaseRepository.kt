@@ -174,11 +174,11 @@ class FirebaseRepository @Inject constructor(
         reference.updateChildren(hashMap)
     }
 
-    fun editFriends(id: String, friends: String) {
+    fun editFriendsInList(id: String, friends: String) {
         val reference =
             FirebaseDatabase.getInstance().getReference("lists").child(id)
         val hashMap: MutableMap<String, Any> = HashMap()
-        hashMap["friends"] = friends
+        hashMap["editors"] = friends
         reference.updateChildren(hashMap)
     }
 

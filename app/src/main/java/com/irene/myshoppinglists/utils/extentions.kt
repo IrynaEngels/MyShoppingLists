@@ -43,6 +43,24 @@ fun List<String>.formStringFromList(): String {
     return listToString.substring(0, listToString.length - 1)
 }
 
+fun List<String>.friendsNotAddedToThisList(friendsAdded: List<String>): List<String> {
+    val friendsNotAdded = mutableListOf<String>()
+    for (f in this) {
+        if (!friendsAdded.contains(f))
+            friendsNotAdded.add(f)
+    }
+    return friendsNotAdded
+}
+
+fun List<String>.newListWithRemovedItem(friend: String): List<String> {
+    val list= mutableListOf<String>()
+    for (f in this) {
+        if (f != friend)
+            list.add(f)
+    }
+    return list
+}
+
 fun String.excludeFromList(list: List<String>): String {
     var listToString = ""
     for (f in list) {

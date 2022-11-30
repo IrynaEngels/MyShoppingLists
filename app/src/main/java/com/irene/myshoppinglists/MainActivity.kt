@@ -18,6 +18,10 @@ import com.irene.myshoppinglists.utils.StoreUserData
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
+// delete lists
+//enable friends delete in view mode
+// make room database with frequently used products
+
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
