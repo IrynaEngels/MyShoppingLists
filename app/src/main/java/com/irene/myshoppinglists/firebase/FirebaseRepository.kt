@@ -166,6 +166,12 @@ class FirebaseRepository @Inject constructor(
         database.child("lists").push().setValue(shoppingList)
     }
 
+    fun deleteList(id: String) {
+        val reference =
+            FirebaseDatabase.getInstance().getReference("lists").child(id)
+        reference.removeValue()
+    }
+
     fun editProducts(id: String, products: String) {
         val reference =
             FirebaseDatabase.getInstance().getReference("lists").child(id)

@@ -106,6 +106,10 @@ class ProductListViewModel @Inject constructor(
         }
     }
 
+    fun deleteList(id: String){
+        repository.deleteList(id)
+    }
+
     fun clearData(){
         _friends.value = listOf()
         _products.value = listOf()

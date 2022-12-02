@@ -7,8 +7,10 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.List
 import androidx.compose.runtime.Composable
@@ -62,7 +64,7 @@ fun ListScreen(productListViewModel: ProductListViewModel, dataStore: StoreUserD
         Divider()
         for (list in shoppingLists.value){
             list.name?.let {
-                ShoppingListItem(list.name){
+                ShoppingListItem(list.name, {
                     navController.navigate("$EDIT_LIST_SCREEN/${list.id}") {
                         navController.graph.startDestinationRoute?.let { screen_route ->
                             popUpTo(screen_route) {
@@ -72,7 +74,12 @@ fun ListScreen(productListViewModel: ProductListViewModel, dataStore: StoreUserD
                         launchSingleTop = true
                         restoreState = true
                     }
-                }
+                }, {
+                    list.id?.let { id ->
+                        productListViewModel.deleteList(id)
+                    }
+
+                })
             }
 
         }
@@ -80,7 +87,7 @@ fun ListScreen(productListViewModel: ProductListViewModel, dataStore: StoreUserD
 }
 
 @Composable
-fun ShoppingListItem(shoppingListName: String, openList: () -> Unit){
+fun ShoppingListItem(shoppingListName: String, openList: () -> Unit, delete: () -> Unit){
     Row(verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
@@ -100,6 +107,15 @@ fun ShoppingListItem(shoppingListName: String, openList: () -> Unit){
             textAlign = TextAlign.Center,
             fontSize = 18.sp
         )
+        Spacer(modifier = Modifier.weight(1f))
+        IconButton(onClick = {
+            delete()
+        }) {
+            Icon(
+                imageVector = Icons.Filled.Delete,
+                contentDescription = "Add",
+            )
+        }
     }
     Divider()
 }
