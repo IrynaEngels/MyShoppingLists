@@ -66,7 +66,9 @@ fun ShoppingListEditScreen(productListViewModel: ProductListViewModel, shoppingL
             AddFriendSharingItem() { openFriendsDialog = true }
             Spacer(modifier = Modifier.width(8.dp))
             for (i in editors!!) {
-                FriendSharingItem(i) {}
+                FriendSharingItem(i) {
+                    productListViewModel.deleteFriendInListFromDB(shoppingListId, it, editors)
+                }
                 Spacer(modifier = Modifier.width(8.dp))
             }
         }

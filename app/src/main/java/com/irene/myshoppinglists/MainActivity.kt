@@ -20,6 +20,7 @@ import javax.inject.Inject
 
 //enable friends delete in view mode
 // make room database with frequently used products
+//clear lists in view model when navigating back
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {

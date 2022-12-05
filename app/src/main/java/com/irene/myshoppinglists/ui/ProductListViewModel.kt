@@ -85,6 +85,16 @@ class ProductListViewModel @Inject constructor(
         repository.editFriendsInList(id, newFriendsList)
     }
 
+    fun deleteFriendInListFromDB(id: String, friendToDelete: String, friends: List<String>){
+        val list = mutableListOf<String>()
+        for(f in friends){
+            if (f != friendToDelete)
+                list.add(f)
+        }
+        val newFriendsList = list.formStringFromList()
+        repository.editFriendsInList(id, newFriendsList)
+    }
+
     fun createList(context: Context, name: String, friends: List<String>, products: List<String>) {
         val storeUserData = StoreUserData(context)
         viewModelScope.launch {
