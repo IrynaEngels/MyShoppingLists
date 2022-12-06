@@ -34,10 +34,7 @@ import com.irene.myshoppinglists.Greeting
 import com.irene.myshoppinglists.ui.navigation.BottomNavItem
 import com.irene.myshoppinglists.ui.navigation.CREATE_LIST_SCREEN
 import com.irene.myshoppinglists.ui.navigation.navigateTo
-import com.irene.myshoppinglists.utils.createNewProduct
-import com.irene.myshoppinglists.utils.log
-import com.irene.myshoppinglists.utils.newListWithRemovedItem
-import com.irene.myshoppinglists.utils.showProductName
+import com.irene.myshoppinglists.utils.*
 
 @Composable
 fun CreateListScreen(productListViewModel: ProductListViewModel, navController: NavHostController) {
@@ -291,9 +288,12 @@ fun AddProductDialog(productListViewModel: ProductListViewModel, addProduct: (pr
                 if (isEnterManually) {
                     Box(modifier = Modifier
                         .height(170.dp).fillMaxWidth(), contentAlignment = Alignment.Center){
-                        ProductTextField(modifier = Modifier.padding(all = 16.dp)) {
+                        TextFieldWithDropdownUsage(productListViewModel.getSavedProducts(), {
                             product = it.text
-                        }
+                        })
+                       /* ProductTextField(modifier = Modifier.padding(all = 16.dp)) {
+                            product = it.text
+                        }*/
                     }
                 } else {
                     Column(
@@ -304,7 +304,7 @@ fun AddProductDialog(productListViewModel: ProductListViewModel, addProduct: (pr
                     ) {
 
                         for (savedProduct in productListViewModel.getSavedProducts()) {
-                            AddProductFromSaved(savedProduct.name, false) { product ->
+                            AddProductFromSaved(savedProduct, false) { product ->
 
                             }
                         }

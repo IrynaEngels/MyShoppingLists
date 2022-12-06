@@ -118,15 +118,15 @@ class ProductListViewModel @Inject constructor(
         }
     }
 
-    fun getSavedProducts(): List<MySavedProduct>{
+    fun getSavedProducts(): List<String>{
         return listOf(
-            MySavedProduct(0, "apples"),
-            MySavedProduct(1, "cheese"),
-            MySavedProduct(2, "fish"),
-            MySavedProduct(3, "water"),
-            MySavedProduct(4, "avocado"),
-            MySavedProduct(5, "cabbage"),
-            MySavedProduct(7, "milk")
+             "apples",
+             "cheese",
+             "fish",
+             "water",
+             "avocado",
+             "cabbage",
+             "milk"
         )
     }
 
