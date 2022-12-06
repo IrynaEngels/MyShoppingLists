@@ -4,6 +4,8 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.irene.myshoppinglists.firebase.FirebaseRepository
+import com.irene.myshoppinglists.model.MySavedProduct
+import com.irene.myshoppinglists.model.Product
 import com.irene.myshoppinglists.model.ShoppingList
 import com.irene.myshoppinglists.model.ShoppingListWithId
 import com.irene.myshoppinglists.utils.*
@@ -114,6 +116,18 @@ class ProductListViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    fun getSavedProducts(): List<MySavedProduct>{
+        return listOf(
+            MySavedProduct(0, "apples"),
+            MySavedProduct(1, "cheese"),
+            MySavedProduct(2, "fish"),
+            MySavedProduct(3, "water"),
+            MySavedProduct(4, "avocado"),
+            MySavedProduct(5, "cabbage"),
+            MySavedProduct(7, "milk")
+        )
     }
 
     fun deleteList(id: String){

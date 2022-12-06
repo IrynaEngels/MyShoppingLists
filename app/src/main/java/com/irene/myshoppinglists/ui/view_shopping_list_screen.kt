@@ -33,7 +33,7 @@ fun ShoppingListEditScreen(productListViewModel: ProductListViewModel, shoppingL
 
     var openDialog by remember { mutableStateOf(false) }
     if (openDialog)
-        AddProductDialog({
+        AddProductDialog(productListViewModel, {
             productListViewModel.addProductToDB(shoppingListId, it, products!!)
         }, {
             openDialog = false

@@ -9,6 +9,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -22,10 +23,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavHostController
 import com.irene.myshoppinglists.Greeting
 import com.irene.myshoppinglists.ui.navigation.BottomNavItem
@@ -50,7 +53,7 @@ fun CreateListScreen(productListViewModel: ProductListViewModel, navController: 
     var listName by remember { mutableStateOf("List") }
     var openProductDialog by remember { mutableStateOf(false) }
     if (openProductDialog)
-        AddProductDialog({
+        AddProductDialog(productListViewModel, {
             productListViewModel.addProduct(it)
         }, {
             openProductDialog = false
@@ -271,42 +274,78 @@ fun ProductItem(product: String, delete: (product: String) -> Unit) {
 }
 
 @Composable
-fun AddProductDialog(addProduct: (product: String) -> Unit, closeDialog: () -> Unit) {
+fun AddProductDialog(productListViewModel: ProductListViewModel, addProduct: (product: String) -> Unit, closeDialog: () -> Unit) {
     var product by remember { mutableStateOf("") }
-    AlertDialog(
+    var inputOptionText by remember { mutableStateOf("Choose from saved") }
+    var isEnterManually by remember { mutableStateOf(true) }
+    Dialog(
         onDismissRequest = {
             closeDialog()
         },
-        title = {
-            Spacer(modifier = Modifier.height(4.dp))
-        },
-        text = {
-            ProductTextField(modifier = Modifier.padding(all = 8.dp)) {
-                product = it.text
-            }
-        },
-        buttons = {
-            Row(
-                modifier = Modifier
-                    .padding(bottom = 8.dp, end = 24.dp)
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.End
-            ) {
-                Button(
-                    onClick = { closeDialog() }
-                ) {
-                    Text("Cancel")
-                }
-                Spacer(modifier = Modifier.width(8.dp))
-                Button(
-                    onClick = {
-                        addProduct(product.createNewProduct())
-                        closeDialog()
+        content = {
+            Column(modifier = Modifier
+                .height(300.dp)
+                .padding(16.dp)
+                .clip(RoundedCornerShape(16.dp, 16.dp, 16.dp, 16.dp,))
+                .background(Color.White)) {
+                if (isEnterManually) {
+                    Box(modifier = Modifier
+                        .height(170.dp).fillMaxWidth(), contentAlignment = Alignment.Center){
+                        ProductTextField(modifier = Modifier.padding(all = 16.dp)) {
+                            product = it.text
+                        }
                     }
+                } else {
+                    Column(
+                        modifier = Modifier
+                            .height(170.dp)
+                            .padding(16.dp)
+                            .verticalScroll(rememberScrollState())
+                    ) {
+
+                        for (savedProduct in productListViewModel.getSavedProducts()) {
+                            AddProductFromSaved(savedProduct.name, false) { product ->
+
+                            }
+                        }
+                    }
+                }
+                ClickableText(
+                    modifier = Modifier.padding(horizontal = 24.dp),
+                    text = AnnotatedString(inputOptionText),
+                    onClick = {
+                        if (isEnterManually) {
+                            isEnterManually = false
+                            inputOptionText = "Enter manually"
+                        } else {
+                            isEnterManually = true
+                            inputOptionText = "Choose from saved"
+                        }
+                    })
+                Spacer(modifier = Modifier.height(16.dp))
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
                 ) {
-                    Text("Add")
+                    Button(
+                        onClick = { closeDialog() }
+                    ) {
+                        Text("Cancel")
+                    }
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Button(
+                        onClick = {
+                            addProduct(product.createNewProduct())
+                            closeDialog()
+                        }
+                    ) {
+                        Text("Add")
+                    }
+                    Spacer(modifier = Modifier.width(16.dp))
                 }
             }
+
         }
     )
 }
@@ -367,6 +406,31 @@ fun AddFriendToList(userName: String, isAdded: Boolean, addOrRemoveFriend: (user
             Spacer(modifier = Modifier.weight(1f))
             IconButton(onClick = {
                 addOrRemoveFriend(userName)
+            }) {
+                if (isAdded)
+                    Icon(
+                        imageVector = Icons.Filled.Check,
+                        contentDescription = "Add",
+                    )
+                else
+                    Icon(
+                        imageVector = Icons.Filled.Add,
+                        contentDescription = "Add",
+                    )
+            }
+        }
+        Divider()
+    }
+}
+
+@Composable
+fun AddProductFromSaved(product: String, isAdded: Boolean, addOrRemoveProduct: (product: String) -> Unit){
+    Column(Modifier.padding(16.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(product, fontSize = 16.sp)
+            Spacer(modifier = Modifier.weight(1f))
+            IconButton(onClick = {
+                addOrRemoveProduct(product)
             }) {
                 if (isAdded)
                     Icon(
