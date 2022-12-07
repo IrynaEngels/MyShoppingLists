@@ -18,9 +18,7 @@ import com.irene.myshoppinglists.utils.StoreUserData
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
-//enable friends delete in view mode
 // make room database with frequently used products
-//clear lists in view model when navigating back
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -58,25 +56,12 @@ class MainActivity : ComponentActivity() {
                     } },
                     { ListScreen(productListViewModel, storeUserData, navController) },
                     { FriendsScreen(firebaseRepository) },
-                    { ProductsScreen() },
+                    { ProductsScreen(productListViewModel) },
                     { CreateListScreen(productListViewModel, navController) },
                     { id -> ShoppingListEditScreen(productListViewModel, id) },
                     { showBottomBar = it}
                 )
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String) {
-    Text(text = "Hello $name!")
-}
-
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    MyShoppingListsTheme {
-        Greeting("Android")
     }
 }

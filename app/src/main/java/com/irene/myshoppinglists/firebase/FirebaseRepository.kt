@@ -4,10 +4,8 @@ import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
-import com.irene.myshoppinglists.model.ShoppingList
-import com.irene.myshoppinglists.model.ShoppingListWithId
-import com.irene.myshoppinglists.model.User
-import com.irene.myshoppinglists.model.UserData
+import com.irene.myshoppinglists.database.ProductDao
+import com.irene.myshoppinglists.model.*
 import com.irene.myshoppinglists.utils.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -21,7 +19,8 @@ import javax.inject.Inject
 
 
 class FirebaseRepository @Inject constructor(
-    private val storeUserData: StoreUserData
+    private val storeUserData: StoreUserData,
+    private val productDao: ProductDao
 ) {
 
     private lateinit var database: DatabaseReference
@@ -40,6 +39,11 @@ class FirebaseRepository @Inject constructor(
         MutableStateFlow(listOf())
 
     val shoppingListsStateFlow: StateFlow<List<ShoppingListWithId>> = _shoppingLists.asStateFlow()
+
+    private val _myProductsList: MutableStateFlow<List<String>> =
+        MutableStateFlow(listOf())
+
+    val myProductsListStateFlow: StateFlow<List<String>> = _myProductsList.asStateFlow()
 
     //TODO cancel
     private val scope = CoroutineScope(Dispatchers.IO)
@@ -208,6 +212,29 @@ class FirebaseRepository @Inject constructor(
                 val hashMap: MutableMap<String, Any> = HashMap()
                 hashMap["friends"] = friendName.excludeFromList(_friends.value)
                 reference.updateChildren(hashMap)
+            }
+        }
+    }
+
+    fun saveMyProduct(product: String){
+        scope.launch {
+            productDao.insertProduct(MySavedProduct(product))
+        }
+    }
+    fun deleteMyProduct(product: String){
+        scope.launch {
+            productDao.deleteProduct(product)
+        }
+    }
+    fun saveMyProducts(products: List<String>){
+        scope.launch {
+            productDao.insertProductsList(products.convertToMySavedProducts())
+        }
+    }
+    fun getMyProducts(){
+        scope.launch{
+            productDao.getAllProducts().collect{
+                _myProductsList.value = it.convertMySavedProductsToString()
             }
         }
     }

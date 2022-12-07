@@ -13,7 +13,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.irene.myshoppinglists.Greeting
 import com.irene.myshoppinglists.firebase.FirebaseRepository
 import com.irene.myshoppinglists.ui.theme.SearchFriendTextField
 import com.irene.myshoppinglists.utils.isSuchUserExists
@@ -33,7 +32,6 @@ fun FriendsScreen(firebaseRepository: FirebaseRepository){
     val friends = firebaseRepository.friendsStateFlow.collectAsState(initial = listOf())
 
     Column(modifier = Modifier.padding(16.dp)) {
-        Greeting("FriendsScreen")
         SearchFriendTextField(modifier = Modifier.fillMaxWidth()){
             userExists = users.value.isSuchUserExists(it.text.removeWhitespaces())
             if (userExists) userName = it.text

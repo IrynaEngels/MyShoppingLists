@@ -44,6 +44,7 @@ class ProductListViewModel @Inject constructor(
 
     fun addProductToDB(id: String, newProduct: String, products: List<String>) {
         repository.editProducts(id, newProduct.formListAddString(products))
+        repository.saveMyProduct(newProduct.showProductName())
     }
 
     fun deleteProductFromDB(id: String, product: String, products: List<String>) {
@@ -118,16 +119,18 @@ class ProductListViewModel @Inject constructor(
         }
     }
 
-    fun getSavedProducts(): List<String>{
-        return listOf(
-             "apples",
-             "cheese",
-             "fish",
-             "water",
-             "avocado",
-             "cabbage",
-             "milk"
-        )
+    fun getSavedProducts(): StateFlow<List<String>>{
+        repository.getMyProducts()
+        return repository.myProductsListStateFlow
+
+    }
+
+    fun addProducts(products: List<String>){
+        repository.saveMyProducts(products)
+    }
+
+    fun deleteMySavedProduct(product: String){
+        repository.deleteMyProduct(product)
     }
 
     fun deleteList(id: String){

@@ -7,6 +7,7 @@ versions.timberVersion = '5.0.1'
 versions.coroutines = '1.4.1'
 versions.daggerVersion = '2.21'
 versions.multidexVersion = '2.0.1'
+versions.roomVersion = "2.2.3"
 
 ext.versions = versions
 //endregion ---------------------------------------------------------

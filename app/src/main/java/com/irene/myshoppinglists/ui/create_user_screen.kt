@@ -10,7 +10,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.navigation.NavHostController
-import com.irene.myshoppinglists.Greeting
 import com.irene.myshoppinglists.firebase.FirebaseRepository
 import com.irene.myshoppinglists.ui.navigation.BottomNavItem
 import com.irene.myshoppinglists.ui.navigation.CREATE_USER_SCREEN
@@ -45,7 +44,6 @@ fun CreateUserScreen(
     val scope = rememberCoroutineScope()
 
     Column() {
-        Greeting("Android")
         UsernameTextField(modifier = Modifier.fillMaxWidth()) {
             userName = it
         }

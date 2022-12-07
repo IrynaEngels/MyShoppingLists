@@ -1,5 +1,6 @@
 package com.irene.myshoppinglists.utils
 
+import com.irene.myshoppinglists.model.MySavedProduct
 import com.irene.myshoppinglists.model.Product
 import com.irene.myshoppinglists.model.ShoppingList
 import com.irene.myshoppinglists.model.ShoppingListWithId
@@ -57,6 +58,30 @@ fun List<String>.newListWithRemovedItem(friend: String): List<String> {
     for (f in this) {
         if (f != friend)
             list.add(f)
+    }
+    return list
+}
+
+fun List<String>.convertToMySavedProducts(): List<MySavedProduct> {
+    val list= mutableListOf<MySavedProduct>()
+    for (f in this) {
+      list.add(MySavedProduct(f))
+    }
+    return list
+}
+
+fun List<String>.formatProducts(): List<String> {
+    val list= mutableListOf<String>()
+    for (f in this) {
+        list.add(f.showProductName())
+    }
+    return list
+}
+
+fun List<MySavedProduct>.convertMySavedProductsToString(): List<String> {
+    val list= mutableListOf<String>()
+    for (f in this) {
+        list.add(f.name)
     }
     return list
 }

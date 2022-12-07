@@ -20,7 +20,6 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.irene.myshoppinglists.Greeting
 import com.irene.myshoppinglists.utils.*
 
 @Composable
@@ -55,7 +54,6 @@ fun ShoppingListEditScreen(productListViewModel: ProductListViewModel, shoppingL
         modifier = Modifier
             .verticalScroll(rememberScrollState())
     ) {
-        Greeting("ProductsScreen")
         Text("Users who can edit this list")
         Row(
             modifier = Modifier

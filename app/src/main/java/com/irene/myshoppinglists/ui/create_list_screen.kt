@@ -30,7 +30,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavHostController
-import com.irene.myshoppinglists.Greeting
 import com.irene.myshoppinglists.ui.navigation.BottomNavItem
 import com.irene.myshoppinglists.ui.navigation.CREATE_LIST_SCREEN
 import com.irene.myshoppinglists.ui.navigation.navigateTo
@@ -119,6 +118,7 @@ fun CreateListScreen(productListViewModel: ProductListViewModel, navController: 
                             friendsInList.value,
                             products.value
                         )
+                        productListViewModel.addProducts(products.value.formatProducts())
                         Toast.makeText(context, "List created", Toast.LENGTH_SHORT).show()
 
                         navController.navigateTo(BottomNavItem.Lists.screen_route)
@@ -273,56 +273,23 @@ fun ProductItem(product: String, delete: (product: String) -> Unit) {
 @Composable
 fun AddProductDialog(productListViewModel: ProductListViewModel, addProduct: (product: String) -> Unit, closeDialog: () -> Unit) {
     var product by remember { mutableStateOf("") }
-    var inputOptionText by remember { mutableStateOf("Choose from saved") }
-    var isEnterManually by remember { mutableStateOf(true) }
+    val myProducts = productListViewModel.getSavedProducts().collectAsState()
     Dialog(
         onDismissRequest = {
             closeDialog()
         },
         content = {
             Column(modifier = Modifier
-                .height(300.dp)
+                .height(240.dp)
                 .padding(16.dp)
                 .clip(RoundedCornerShape(16.dp, 16.dp, 16.dp, 16.dp,))
                 .background(Color.White)) {
-                if (isEnterManually) {
-                    Box(modifier = Modifier
-                        .height(170.dp).fillMaxWidth(), contentAlignment = Alignment.Center){
-                        TextFieldWithDropdownUsage(productListViewModel.getSavedProducts(), {
-                            product = it.text
-                        })
-                       /* ProductTextField(modifier = Modifier.padding(all = 16.dp)) {
-                            product = it.text
-                        }*/
-                    }
-                } else {
-                    Column(
-                        modifier = Modifier
-                            .height(170.dp)
-                            .padding(16.dp)
-                            .verticalScroll(rememberScrollState())
-                    ) {
-
-                        for (savedProduct in productListViewModel.getSavedProducts()) {
-                            AddProductFromSaved(savedProduct, false) { product ->
-
-                            }
-                        }
-                    }
+                Spacer(modifier = Modifier.height(24.dp))
+                TextFieldWithDropdownUsage(myProducts.value) {
+                    product = it.text
                 }
-                ClickableText(
-                    modifier = Modifier.padding(horizontal = 24.dp),
-                    text = AnnotatedString(inputOptionText),
-                    onClick = {
-                        if (isEnterManually) {
-                            isEnterManually = false
-                            inputOptionText = "Enter manually"
-                        } else {
-                            isEnterManually = true
-                            inputOptionText = "Choose from saved"
-                        }
-                    })
-                Spacer(modifier = Modifier.height(16.dp))
+
+                Spacer(modifier = Modifier.height(24.dp))
                 Row(
                     modifier = Modifier
                         .fillMaxWidth(),

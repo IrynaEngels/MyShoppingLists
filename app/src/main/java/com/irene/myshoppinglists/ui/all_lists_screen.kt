@@ -24,7 +24,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.irene.myshoppinglists.Greeting
 import com.irene.myshoppinglists.firebase.FirebaseRepository
 import com.irene.myshoppinglists.ui.navigation.CREATE_LIST_SCREEN
 import com.irene.myshoppinglists.ui.navigation.EDIT_LIST_SCREEN
@@ -39,7 +38,13 @@ fun ListScreen(productListViewModel: ProductListViewModel, dataStore: StoreUserD
 
     Column(modifier = Modifier
         .verticalScroll(rememberScrollState())) {
-        Greeting("${userName.value}'s ListScreen")
+        Row(verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)){
+            Text("User: ${userName.value}",fontSize = 18.sp)
+        }
+
         Divider()
         Row(verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
