@@ -24,6 +24,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -360,6 +362,124 @@ fun AddFriendsDialog(productListViewModel: ProductListViewModel, usersToAdd: Lis
                     Text("OK")
                 }
             }
+        }
+    )
+}
+
+
+@Composable
+fun AddQuantityDialog(productListViewModel: ProductListViewModel, changeQuantity: (product: String) -> Unit, closeDialog: () -> Unit) {
+    var product by remember { mutableStateOf("") }
+    var quantity by remember { mutableStateOf(1) }
+    val myProducts = productListViewModel.getSavedProducts().collectAsState()
+    Dialog(
+        onDismissRequest = {
+            closeDialog()
+        },
+        content = {
+            Column(modifier = Modifier
+                .padding(16.dp)
+                .clip(RoundedCornerShape(16.dp, 16.dp, 16.dp, 16.dp,))
+                .background(Color.White)) {
+                Spacer(modifier = Modifier.height(24.dp))
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                ){
+                    Text(
+                        "Set the amount of product",
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
+                Spacer(modifier = Modifier.height(24.dp))
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ){
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(4.dp))
+                            .width(36.dp)
+                            .height(36.dp)
+                            .border(width = 1.dp,
+                                color = Color.DarkGray,
+                                shape = RoundedCornerShape(4.dp))
+                            .clickable {
+                                if (quantity > 1) quantity--
+                            }, contentAlignment = Alignment.Center
+                    ){
+                        Text(
+                            "-",
+                            fontSize = 16.sp,
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(4.dp))
+                            .width(52.dp)
+                            .height(52.dp)
+                            .background(Color.LightGray)
+                            .border(width = 1.dp,
+                                color = Color.DarkGray,
+                                shape = RoundedCornerShape(4.dp)),
+                        contentAlignment = Alignment.Center
+                    ){
+                        Text(
+                            "$quantity",
+                            fontSize = 20.sp,
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(4.dp))
+                            .width(36.dp)
+                            .height(36.dp)
+                            .border(width = 1.dp,
+                                color = Color.DarkGray,
+                                shape = RoundedCornerShape(4.dp))
+                            .clickable {
+                                quantity++
+                            }, contentAlignment = Alignment.Center
+                    ){
+                        Text(
+                            "+",
+                            fontSize = 16.sp,
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    Button(
+                        onClick = { closeDialog() }
+                    ) {
+                        Text("Cancel")
+                    }
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Button(
+                        onClick = {
+                            changeQuantity(product.createNewProduct())
+                            closeDialog()
+                        }
+                    ) {
+                        Text("Set")
+                    }
+                    Spacer(modifier = Modifier.width(16.dp))
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+
         }
     )
 }

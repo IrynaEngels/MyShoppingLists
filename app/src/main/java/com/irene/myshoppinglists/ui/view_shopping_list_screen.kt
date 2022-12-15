@@ -1,21 +1,20 @@
 package com.irene.myshoppinglists.ui
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Divider
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.Text
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
@@ -49,7 +48,13 @@ fun ShoppingListEditScreen(productListViewModel: ProductListViewModel, shoppingL
                 openFriendsDialog = false
                 productListViewModel.clearFriendsList()
             })
-
+    var openQuantityDialog by remember { mutableStateOf(false) }
+    if (openQuantityDialog)
+        AddQuantityDialog(productListViewModel, {
+            openQuantityDialog = false
+            }, {
+            openQuantityDialog = false
+            })
     Column(
         modifier = Modifier
             .verticalScroll(rememberScrollState())
@@ -76,6 +81,8 @@ fun ShoppingListEditScreen(productListViewModel: ProductListViewModel, shoppingL
         products?.let {
             for (p in products) {
                 EditProductItem(product = p, {
+                    openQuantityDialog = true
+                },{
                     productListViewModel.editProductsInDB(shoppingListId, it, products)
                 }, {
                     productListViewModel.deleteProductFromDB(shoppingListId, it, products)
@@ -90,6 +97,7 @@ fun ShoppingListEditScreen(productListViewModel: ProductListViewModel, shoppingL
 @Composable
 fun EditProductItem(
     product: String,
+    changeQuantity: (product: String) -> Unit,
     edit: (product: String) -> Unit,
     delete: (product: String) -> Unit
 ) {
@@ -110,7 +118,25 @@ fun EditProductItem(
                     )
             }
             Spacer(modifier = Modifier.width(16.dp))
-//            Text(product, fontSize = 16.sp)
+            Box(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(4.dp))
+                    .width(28.dp)
+                    .height(28.dp)
+                    .background(Color.LightGray)
+                    .border(width = 1.dp,
+                        color = Color.DarkGray,
+                        shape = RoundedCornerShape(4.dp))
+                    .clickable {
+                        changeQuantity(product)
+                    }, contentAlignment = Alignment.Center
+            ){
+                Text(
+                    "1",
+                    fontSize = 16.sp,
+                )
+            }
+            Spacer(modifier = Modifier.width(8.dp))
             Text(
                 product.showProductName(),
                 fontSize = 16.sp,
