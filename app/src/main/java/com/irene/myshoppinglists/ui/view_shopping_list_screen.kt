@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.ShoppingCart
@@ -49,8 +48,10 @@ fun ShoppingListEditScreen(productListViewModel: ProductListViewModel, shoppingL
                 productListViewModel.clearFriendsList()
             })
     var openQuantityDialog by remember { mutableStateOf(false) }
+    var productToChangeQuantity by remember { mutableStateOf("") }
     if (openQuantityDialog)
-        AddQuantityDialog(productListViewModel, {
+        AddQuantityDialog(productListViewModel, productToChangeQuantity, {quantity, name ->
+            productListViewModel.productInDBSetQuantity(shoppingListId, name, quantity, products!!)
             openQuantityDialog = false
             }, {
             openQuantityDialog = false
@@ -80,10 +81,11 @@ fun ShoppingListEditScreen(productListViewModel: ProductListViewModel, shoppingL
         }
         products?.let {
             for (p in products) {
-                EditProductItem(product = p, {
+                EditProductItem(product = p,  { product ->
+                    productToChangeQuantity = product
                     openQuantityDialog = true
                 },{
-                    productListViewModel.editProductsInDB(shoppingListId, it, products)
+                    productListViewModel.productInDBSetBought(shoppingListId, it, products)
                 }, {
                     productListViewModel.deleteProductFromDB(shoppingListId, it, products)
                 })
@@ -132,13 +134,14 @@ fun EditProductItem(
                     }, contentAlignment = Alignment.Center
             ){
                 Text(
-                    "1",
+                    "${product.showProductQuantity()}",
                     fontSize = 16.sp,
                 )
             }
             Spacer(modifier = Modifier.width(8.dp))
             Text(
                 product.showProductName(),
+                modifier = Modifier.width(200.dp),
                 fontSize = 16.sp,
                 style = TextStyle(textDecoration = if (product.isProductBought()) TextDecoration.LineThrough else TextDecoration.None)
             )

@@ -64,7 +64,16 @@ fun CreateListScreen(productListViewModel: ProductListViewModel, navController: 
         }, {
             openFriendsDialog = false
         })
-
+    var openQuantityDialog by remember { mutableStateOf(false) }
+    var productToChangeQuantity by remember { mutableStateOf("") }
+    if (openQuantityDialog)
+        AddQuantityDialog(productListViewModel, productToChangeQuantity, {quantity, name ->
+            log("AddQuantityDialog quantity $quantity")
+            productListViewModel.changeProductQuantity(name.editCreateListWhenQuantityChanged(quantity, products.value))
+            openQuantityDialog = false
+        }, {
+            openQuantityDialog = false
+        })
     Column(modifier = Modifier.padding(horizontal = 16.dp)) {
         Text("Name")
         ListNameTextField(
@@ -102,9 +111,12 @@ fun CreateListScreen(productListViewModel: ProductListViewModel, navController: 
             state = rememberLazyListState()
         ) {
             itemsIndexed(products.value) { index, item ->
-                ProductItem(item) {
+                ProductItem(item, {
+                    productToChangeQuantity = it
+                    openQuantityDialog = true
+                }, {
                     productListViewModel.deleteProduct(it)
-                }
+                })
             }
         }
         Row(modifier = Modifier
@@ -254,10 +266,29 @@ fun AddProduct(openAddDialog: () -> Unit) {
 }
 
 @Composable
-fun ProductItem(product: String, delete: (product: String) -> Unit) {
+fun ProductItem(product: String, changeQuantity: (product: String) -> Unit, delete: (product: String) -> Unit) {
     Column(Modifier.padding(horizontal = 16.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(product.showProductName(), fontSize = 16.sp)
+            Box(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(4.dp))
+                    .width(28.dp)
+                    .height(28.dp)
+                    .background(Color.LightGray)
+                    .border(width = 1.dp,
+                        color = Color.DarkGray,
+                        shape = RoundedCornerShape(4.dp))
+                    .clickable {
+                        changeQuantity(product)
+                    }, contentAlignment = Alignment.Center
+            ){
+                Text(
+                    "${product.showProductQuantity()}",
+                    fontSize = 16.sp,
+                )
+            }
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(product.showProductName(), modifier = Modifier.width(200.dp), fontSize = 16.sp)
             Spacer(modifier = Modifier.weight(1f))
             IconButton(onClick = {
                 delete(product)
@@ -276,6 +307,7 @@ fun ProductItem(product: String, delete: (product: String) -> Unit) {
 fun AddProductDialog(productListViewModel: ProductListViewModel, addProduct: (product: String) -> Unit, closeDialog: () -> Unit) {
     var product by remember { mutableStateOf("") }
     val myProducts = productListViewModel.getSavedProducts().collectAsState()
+    val context = LocalContext.current
     Dialog(
         onDismissRequest = {
             closeDialog()
@@ -305,8 +337,12 @@ fun AddProductDialog(productListViewModel: ProductListViewModel, addProduct: (pr
                     Spacer(modifier = Modifier.width(8.dp))
                     Button(
                         onClick = {
-                            addProduct(product.createNewProduct())
-                            closeDialog()
+                            if (product.contains("#")){
+                                Toast.makeText(context, "Symbol # is not allowed in product name", Toast.LENGTH_LONG).show()
+                            } else {
+                                addProduct(product.createNewProduct())
+                                closeDialog()
+                            }
                         }
                     ) {
                         Text("Add")
@@ -368,10 +404,8 @@ fun AddFriendsDialog(productListViewModel: ProductListViewModel, usersToAdd: Lis
 
 
 @Composable
-fun AddQuantityDialog(productListViewModel: ProductListViewModel, changeQuantity: (product: String) -> Unit, closeDialog: () -> Unit) {
-    var product by remember { mutableStateOf("") }
-    var quantity by remember { mutableStateOf(1) }
-    val myProducts = productListViewModel.getSavedProducts().collectAsState()
+fun AddQuantityDialog(productListViewModel: ProductListViewModel, product: String, changeQuantity: (productQuantity: Int, productName: String) -> Unit, closeDialog: () -> Unit) {
+    var quantity by remember { mutableStateOf(product.showProductQuantity()) }
     Dialog(
         onDismissRequest = {
             closeDialog()
@@ -469,7 +503,7 @@ fun AddQuantityDialog(productListViewModel: ProductListViewModel, changeQuantity
                     Spacer(modifier = Modifier.width(8.dp))
                     Button(
                         onClick = {
-                            changeQuantity(product.createNewProduct())
+                            changeQuantity(quantity, product)
                             closeDialog()
                         }
                     ) {

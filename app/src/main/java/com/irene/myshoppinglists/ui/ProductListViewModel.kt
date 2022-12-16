@@ -4,10 +4,7 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.irene.myshoppinglists.firebase.FirebaseRepository
-import com.irene.myshoppinglists.model.MySavedProduct
-import com.irene.myshoppinglists.model.Product
 import com.irene.myshoppinglists.model.ShoppingList
-import com.irene.myshoppinglists.model.ShoppingListWithId
 import com.irene.myshoppinglists.utils.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -34,6 +31,11 @@ class ProductListViewModel @Inject constructor(
 
     val friendsStateFlow: StateFlow<List<String>> = _friends.asStateFlow()
 
+    private val _productsQuantity: MutableStateFlow<Int> =
+        MutableStateFlow(1)
+
+    val productsQuantityStateFlow: StateFlow<Int> = _productsQuantity.asStateFlow()
+
     fun addProduct(product: String) {
         val list = mutableListOf<String>()
         for (p in productsStateFlow.value)
@@ -51,8 +53,12 @@ class ProductListViewModel @Inject constructor(
         repository.editProducts(id, product.excludeFromList(products))
     }
 
-    fun editProductsInDB(id: String, product: String, products: List<String>) {
+    fun productInDBSetBought(id: String, product: String, products: List<String>) {
         repository.editProducts(id, product.editListWhenProductBought(products))
+    }
+
+    fun productInDBSetQuantity(id: String, product: String, quantity: Int, products: List<String>) {
+        repository.editProducts(id, product.editListWhenQuantityChanged(quantity, products))
     }
 
 
@@ -62,6 +68,11 @@ class ProductListViewModel @Inject constructor(
             if (p != product)
                 list.add(p)
         _products.value = list
+    }
+
+    fun changeProductQuantity(newList: List<String>){
+        log("changeProductQuantity $newList")
+        _products.value = newList
     }
 
     fun addFriend(friend: String) {

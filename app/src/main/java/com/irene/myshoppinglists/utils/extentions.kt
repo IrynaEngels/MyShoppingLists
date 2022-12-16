@@ -129,9 +129,44 @@ fun List<ShoppingListWithId>.getListById(id: String): ShoppingListWithId {
 
 fun String.createNewProduct(): String {
     log("createNewProduct $this")
-    return "${this}N"
+    return "1#${this}N"
 }
 
 fun String.showProductName(): String {
-    return this.subSequence(0, this.length-1).toString()
+    val values = this.split("#")
+    return values[1].subSequence(0, values[1].length-1).toString()
+}
+
+fun String.showProductQuantity(): Int {
+    val values = this.split("#")
+    return values[0].toInt()
+}
+
+fun String.editListWhenQuantityChanged(quantity: Int, list: List<String>): String {
+    var listToString = ""
+    for (f in list) {
+        if (f == this)
+            listToString += "${f.changeQuantity(quantity)},"
+        else
+            listToString += "$f,"
+    }
+    return listToString.substring(0, listToString.length - 1)
+}
+
+fun String.editCreateListWhenQuantityChanged(quantity: Int, list: List<String>): List<String> {
+    var newList = arrayListOf<String>()
+    for (f in list) {
+        if (f == this) {
+            newList.add("${f.changeQuantity(quantity)}")
+        }
+        else {
+            newList.add(f)
+        }
+    }
+    return newList
+}
+
+fun String.changeQuantity(quantity: Int): String {
+    val values = this.split("#")
+    return "$quantity#${values[1]}"
 }
